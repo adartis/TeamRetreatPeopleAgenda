@@ -1,0 +1,779 @@
+<!doctype html><html><head><meta charset="utf8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><script type='text/javascript' nonce='4CGilEC106ycmRfSzDqDdg==' src='https://e5343b38-571b-427c-bc33-3a62dde4e00d.frame.claudeusercontent.com/2OiSz0wKiEYyJ5W6gD7J2GWenqs6AQIZeXmn1VW2vBpA4oeYPtJnRxaM38-F2MylzBA-y2objlsaVaKvG9JsuAUoQ-KMQ_CFI_PC5vv6EiP8trLy8nrJcnSQJWI02uC2fgYy1HYRX_PEaIGJb8KM2taDsWGvAur1ireVVnJ5T8IAIeXCMFC2HGkcLsmEsfFfEfro6rLMqYxPLmfEM_KmsErbFEsCDr00ryW1itaLYezd7quWQWLT2PEyALApIY7NuBNcRz4LVh5lr7G-Ql0pb5sGEfbAF2vsr8ISB6psDrOPMq41NNnnokXnnhmsjqtuvUNo8b3HdwlSebGHHExasYArqYBPRydCFmbhzjZWmBnUnHv-GOsJ2oHQryERXcFP6FaIxKiato-Zae_5LBgtPtqx-5h0sTXJA9N-n8bcEZ7yl3VzxCrBy7SqK3yTXq-5Y4Yu7JMw2s8JYC2rmomQIsmVdONU3E6ClzoRWptXe1f4ABwA3NjPwbCQAc5SICYYs7xTCUs4ofqRyi_EfUlb5-O1hCnIIFIdqZvimURp_5pxUWXnbKtKMUU0bx2jvQuIVt7IJo79v02DihH6ofTbivXP-3pvxofZrCs7mY0l2JTnpn0dGjbCCJMvAAHSzXZ1Cy-jsrCDphB37mL8EtFeRmX1FO9wziPiQOMYBP-JiL3IaF6mvklj8-pj1zkdxWP3o5Acl2LVsJCqWsl2b3JZsw'></script></head><body>
+<title>Finding the Balance</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Arimo:ital,wght@0,400;0,700;1,400;1,700&amp;family=Gelasio:wght@400;700&amp;display=swap">
+<style>
+/* Layout: a fixed 1280x720 slide canvas, scaled to fit the window, with a slim control bar beneath.
+   Slides keep the deck's own palette in every theme; the stage around them follows the viewer's theme. */
+:root {
+  --stage: #D5DBE4;
+  --bar-bg: #FFFFFF;
+  --bar-fg: #14213D;
+  --bar-muted: #5B6578;
+  --bar-line: #C3CAD6;
+  --panel-bg: #FFFFFF;
+  --panel-fg: #1E293B;
+  --focus: #C98A2B;
+
+  /* deck palette (fixed) */
+  --navy: #14213D;
+  --navy-2: #1E3A6E;
+  --blue: #5B7DB1;
+  --sky: #8FA8D1;
+  --ochre: #C98A2B;
+  --ochre-dk: #A8701E;
+  --mist: #EEF2F7;
+  --ink: #1E293B;
+  --slate: #64748B;
+  --rule: #CBCBCB;
+  --give: #2E7458;
+  --cost: #B0452B;
+
+  --serif: Georgia, Gelasio, "Times New Roman", serif;
+  --sans: Arial, Arimo, "Helvetica Neue", Helvetica, sans-serif;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --stage: #070C18; --bar-bg: #0F1729; --bar-fg: #E6EBF3; --bar-muted: #93A0B8;
+    --bar-line: #26324A; --panel-bg: #111A2E; --panel-fg: #DCE3EE; color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --stage: #070C18; --bar-bg: #0F1729; --bar-fg: #E6EBF3; --bar-muted: #93A0B8;
+  --bar-line: #26324A; --panel-bg: #111A2E; --panel-fg: #DCE3EE; color-scheme: dark;
+}
+
+html, body { height: 100%; }
+body { margin: 0; background: var(--stage); color: var(--bar-fg); font-family: var(--sans); overflow: hidden; }
+.app { height: 100%; display: flex; flex-direction: column; }
+.stage { flex: 1; min-height: 0; display: grid; place-items: center; padding: 12px 16px; position: relative; }
+.frame { position: relative; box-shadow: 0 6px 30px rgba(10, 20, 40, .25); }
+.deck { position: absolute; top: 0; left: 0; width: 1280px; height: 720px; transform-origin: 0 0; overflow: hidden; background: #fff; }
+
+/* ---------- control bar ---------- */
+.controls {
+  flex: none; height: 48px; display: flex; align-items: center; justify-content: center; gap: 8px;
+  background: var(--bar-bg); border-top: 1px solid var(--bar-line); padding-inline: 16px;
+  padding-bottom: env(safe-area-inset-bottom, 0px); transition: opacity .25s;
+}
+.controls button {
+  font: 600 13px/1 var(--sans); color: var(--bar-fg); background: transparent; border: 1px solid var(--bar-line);
+  border-radius: 6px; height: 32px; min-width: 36px; padding: 0 12px; cursor: pointer;
+}
+.controls button:hover { border-color: var(--bar-muted); }
+.controls button:focus-visible, .handle:focus-visible, .reset:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.controls .count { font: 600 13px/1 var(--sans); color: var(--bar-muted); min-width: 64px; text-align: center; font-variant-numeric: tabular-nums; }
+.controls .spacer { width: 12px; }
+.controls .hint { font-size: 12px; color: var(--bar-muted); margin-left: 8px; }
+@media (max-width: 640px) { .controls .hint, .controls .spacer { display: none; } }
+.app.fs .controls { position: fixed; left: 0; right: 0; bottom: 0; opacity: 0; }
+.app.fs.show-ui .controls { opacity: 1; }
+
+/* ---------- phones ---------- */
+html { -webkit-text-size-adjust: 100%; text-size-adjust: 100%; }
+body { touch-action: manipulation; }
+.rotate {
+  position: fixed; inset: 0; z-index: 50; display: none; flex-direction: column; align-items: center; justify-content: center;
+  gap: 18px; padding: 32px 24px; text-align: center; background: var(--navy); color: #fff;
+  padding-top: calc(32px + env(safe-area-inset-top, 0px)); padding-bottom: calc(32px + env(safe-area-inset-bottom, 0px));
+}
+.rotate .phone { width: 64px; height: 104px; border: 4px solid #fff; border-radius: 12px; position: relative; animation: turn 2.4s ease-in-out infinite; }
+.rotate .phone::after { content: ""; position: absolute; left: 50%; bottom: 7px; width: 14px; height: 4px; margin-left: -7px; border-radius: 2px; background: var(--ochre); }
+@keyframes turn { 0%, 25% { transform: rotate(0deg); } 55%, 85% { transform: rotate(-90deg); } 100% { transform: rotate(0deg); } }
+@media (prefers-reduced-motion: reduce) { .rotate .phone { animation: none; transform: rotate(-90deg); } }
+.rotate .eyebrow { color: var(--ochre); margin-top: 18px; }
+.rotate h2 { font-size: 30px; color: #fff; margin: 0; }
+.rotate p { margin: 0; max-width: 300px; font-size: 16px; line-height: 1.5; color: var(--sky); }
+.rotate button { margin-top: 10px; font: 600 14px/1 var(--sans); color: #fff; background: transparent; border: 1px solid var(--sky); border-radius: 6px; padding: 12px 18px; cursor: pointer; }
+.rotate button:focus-visible { outline: 3px solid var(--ochre); outline-offset: 2px; }
+
+/* Phone held upright: ask to rotate (unless the viewer chose to carry on) */
+@media (orientation: portrait) and (max-width: 760px) {
+  .app:not(.portrait-ok) .rotate { display: flex; }
+}
+/* Phone held sideways: give the slide every pixel we can */
+@media (orientation: landscape) and (max-height: 520px) {
+  .stage {
+    padding: 4px max(8px, env(safe-area-inset-right, 0px)) 4px max(8px, env(safe-area-inset-left, 0px));
+  }
+  .frame { box-shadow: none; }
+  .controls { height: 38px; gap: 6px; }
+  .controls button { height: 28px; min-width: 32px; padding: 0 10px; font-size: 12px; }
+  .controls .hint, .controls .spacer { display: none; }
+  .notes { max-height: 55%; font-size: 14px; bottom: 6px; left: 8px; right: 8px; }
+}
+/* Touch screens: a larger grab target around the slider knob */
+@media (pointer: coarse) {
+  .handle { width: 72px; margin-left: -36px; top: -22px; bottom: -22px; }
+  .knob { width: 40px; height: 40px; }
+}
+
+/* ---------- notes panel ---------- */
+.notes {
+  position: absolute; left: 16px; right: 16px; bottom: 12px; max-height: 40%; overflow: auto;
+  background: var(--panel-bg); color: var(--panel-fg); border: 1px solid var(--bar-line); border-radius: 8px;
+  padding: 14px 18px; font: 15px/1.5 var(--sans); box-shadow: 0 8px 30px rgba(0,0,0,.25); z-index: 5;
+}
+.notes b { display: block; font-size: 11px; letter-spacing: .14em; text-transform: uppercase; color: var(--bar-muted); margin-bottom: 4px; }
+
+/* ---------- slides ---------- */
+.slide {
+  position: absolute; inset: 0; padding: 62px 64px 0; background: #fff; color: var(--ink);
+  font-family: var(--sans); opacity: 0; visibility: hidden; transition: opacity .22s ease, visibility 0s linear .22s;
+}
+.slide.active { opacity: 1; visibility: visible; transition: opacity .22s ease; }
+@media (prefers-reduced-motion: reduce) { .slide, .slide.active { transition: none; } }
+.slide.dark { background: var(--navy); color: #fff; }
+.eyebrow { font: 700 13px/1 var(--sans); letter-spacing: .2em; text-transform: uppercase; color: var(--ochre-dk); }
+.dark .eyebrow { color: var(--ochre); }
+h1, h2, h3 { font-family: var(--serif); font-weight: 700; margin: 0; text-wrap: balance; }
+h2 { font-size: 46px; line-height: 1.12; color: var(--navy); margin-top: 10px; }
+.dark h2 { color: #fff; }
+.foot { position: absolute; left: 64px; right: 64px; bottom: 26px; display: flex; justify-content: space-between; font: 12px var(--sans); color: var(--slate); }
+.dark .foot { color: var(--sky); }
+.num { width: 28px; height: 28px; border-radius: 50%; background: var(--navy-2); color: #fff; display: grid; place-items: center; font: 700 14px/1 var(--sans); flex: none; }
+.num.ochre { background: var(--ochre); color: var(--navy); }
+ul.dots { margin: 0; padding: 0; list-style: none; display: grid; gap: 7px; }
+ul.dots li { position: relative; padding-left: 18px; font-size: 16px; line-height: 1.35; color: var(--ink); }
+ul.dots li::before { content: ""; position: absolute; left: 4px; top: .55em; width: 5px; height: 5px; border-radius: 50%; background: var(--ink); }
+.label { font: 700 12px/1 var(--sans); letter-spacing: .18em; text-transform: uppercase; }
+.panel { background: var(--mist); border-radius: 4px; }
+.darkcard { background: var(--navy); color: #fff; border-radius: 4px; }
+
+/* 1 · cover */
+.s-cover { padding-top: 140px; }
+.s-cover h1 { font-size: 54px; line-height: 1.24; color: #fff; max-width: 600px; margin-top: 22px; }
+.s-cover .who { position: absolute; left: 64px; bottom: 90px; font-size: 18px; color: var(--sky); }
+
+/* 2 · agenda */
+.agenda { position: absolute; left: 50%; top: 226px; transform: translateX(-50%); width: 560px; display: grid; gap: 16px; }
+.agenda .panel { display: flex; align-items: center; gap: 18px; padding: 0 24px; height: 94px; font: 700 19px/1.3 var(--sans); color: var(--navy); }
+.agenda .num { width: 34px; height: 34px; background: var(--navy); font-size: 15px; }
+
+/* 3 · four teams */
+.split { position: absolute; left: 64px; right: 64px; top: 186px; display: grid; grid-template-columns: 412px 1fr; gap: 56px; }
+.split .darkcard { padding: 30px 32px; }
+.split .darkcard .label { color: var(--ochre); margin-bottom: 18px; }
+.split .darkcard p { margin: 0; font: 26px/1.38 var(--serif); }
+.steps { display: grid; gap: 30px; align-content: start; padding-top: 22px; }
+.steps > div { display: flex; gap: 18px; align-items: flex-start; }
+.steps h3 { font: 700 18px/1.3 var(--sans); color: var(--navy); }
+.steps p { margin: 4px 0 0; font-size: 15px; line-height: 1.45; color: var(--slate); max-width: 600px; }
+
+/* 4 · how much (interactive) */
+.bar-wrap { position: absolute; left: 64px; right: 64px; }
+.bar { position: relative; height: 56px; display: flex; border-radius: 4px; overflow: visible; touch-action: none; cursor: ew-resize; user-select: none; -webkit-user-select: none; }
+.seg { box-sizing: border-box; flex: none; height: 100%; display: flex; align-items: center; overflow: hidden; white-space: nowrap; font: 700 16px/1 var(--sans); }
+.seg:first-child { border-radius: 4px 0 0 4px; }
+.seg:last-child { border-radius: 0 4px 4px 0; }
+.seg.client, .seg.home { background: var(--navy-2); color: #fff; padding-left: 16px; }
+.seg.remote { background: var(--blue); color: #fff; padding-left: 26px; }
+.seg.bd { background: var(--ochre); color: var(--navy); padding-left: 26px; }
+.handle {
+  position: absolute; top: -12px; bottom: -12px; width: 44px; margin-left: -22px; cursor: ew-resize;
+  display: flex; justify-content: center; align-items: center; touch-action: none; z-index: 2; border-radius: 6px;
+}
+.handle::before { content: ""; position: absolute; top: 0; bottom: 0; left: 50%; width: 4px; margin-left: -2px; background: #fff; box-shadow: 0 0 0 1px var(--navy); border-radius: 2px; }
+.knob { position: relative; width: 30px; height: 30px; border-radius: 50%; background: #fff; border: 2px solid var(--navy); display: flex; gap: 4px; justify-content: center; align-items: center; box-shadow: 0 2px 6px rgba(20,33,61,.35); }
+.knob i { width: 2px; height: 12px; background: var(--navy); border-radius: 1px; }
+.handle:hover .knob, .handle.dragging .knob { transform: scale(1.12); }
+.ticks { position: relative; height: 18px; margin-top: 10px; font: 12px/1 var(--sans); color: var(--slate); font-variant-numeric: tabular-nums; }
+.ticks span { position: absolute; transform: translateX(-50%); }
+.ticks span::before { content: ""; position: absolute; left: 50%; top: -8px; width: 1px; height: 5px; background: var(--rule); }
+.ticks span:first-child { transform: none; }
+.ticks span:first-child::before { left: 0; }
+.ticks span:last-child { transform: translateX(-100%); }
+.ticks span:last-child::before { left: auto; right: 0; }
+.stats { position: absolute; left: 64px; right: 64px; top: 296px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
+.stats .panel { padding: 22px 26px 24px; }
+.stats .big { font: 700 56px/1.05 var(--serif); color: var(--navy); font-variant-numeric: tabular-nums; }
+.stats .big.pop { animation: pop .35s ease; }
+@keyframes pop { 40% { color: var(--ochre-dk); } }
+@media (prefers-reduced-motion: reduce) { .stats .big.pop { animation: none; } }
+.stats p { margin: 10px 0 0; font-size: 15px; line-height: 1.45; color: var(--slate); }
+.defs { position: absolute; left: 64px; right: 64px; top: 500px; font-size: 15px; line-height: 1.6; font-style: italic; }
+.defs .c { color: var(--navy-2); } .defs .b { color: var(--ochre-dk); }
+.drag-hint { position: absolute; left: 64px; right: 64px; top: 580px; display: flex; align-items: center; gap: 14px; font-size: 13px; color: var(--slate); }
+.reset { font: 700 12px/1 var(--sans); color: var(--navy); background: #fff; border: 1px solid var(--rule); border-radius: 4px; padding: 7px 12px; cursor: pointer; }
+.reset:hover { border-color: var(--slate); }
+
+/* 5 · rhythms */
+.track { position: absolute; left: 64px; right: 64px; top: 182px; display: flex; align-items: center; gap: 14px; }
+.track .label { color: var(--navy); }
+.track hr { flex: 1; border: 0; height: 2px; background: var(--blue); margin: 0; }
+.rhythms { position: absolute; left: 64px; right: 64px; top: 214px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; }
+.rhythms > div { padding: 26px 26px 24px; border-radius: 4px; background: var(--mist); }
+.rhythms > div.d { background: var(--navy); }
+.rhythms .k { font: 700 16px/1 var(--sans); color: var(--ochre-dk); }
+.rhythms .d .k { color: var(--ochre); }
+.rhythms .v { font: 700 42px/1.1 var(--serif); color: var(--navy); margin-top: 10px; }
+.rhythms .d .v { color: #fff; }
+.rhythms .u { font-size: 15px; color: var(--slate); margin-top: 12px; }
+.rhythms .d .u { color: var(--sky); }
+.note { position: absolute; left: 64px; right: 64px; font-size: 16px; font-style: italic; color: var(--ochre-dk); }
+
+/* 6, 7 · two cards */
+.pair { position: absolute; left: 64px; right: 64px; top: 180px; display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.pair .panel { padding: 26px 28px 28px; }
+.pair h3 { font-size: 29px; color: var(--navy); }
+.pair .label { margin: 18px 0 10px; color: var(--navy-2); }
+.pair .label.cost { color: var(--ochre-dk); }
+.iconhead { display: flex; align-items: center; gap: 14px; margin-bottom: 18px; }
+.icon { width: 46px; height: 46px; border-radius: 50%; display: grid; place-items: center; flex: none; }
+.icon svg { width: 24px; height: 24px; }
+.banner { position: absolute; left: 64px; right: 64px; top: 500px; padding: 20px 26px; font-size: 17px; }
+.banner strong { color: var(--ochre); }
+
+/* 8, 12 · discussion */
+.qs { position: absolute; left: 64px; right: 64px; top: 186px; display: grid; gap: 18px; }
+.qs > div { background: var(--navy-2); border-radius: 4px; padding: 0 26px; min-height: 82px; display: flex; align-items: center; gap: 18px; font: 21px/1.38 var(--sans); color: #fff; }
+.qs .num { background: var(--ochre); color: var(--navy); }
+.after { position: absolute; left: 64px; right: 64px; font-size: 15px; color: var(--sky); }
+
+/* 9 · conditions table */
+table.cond { position: absolute; left: 64px; right: 64px; top: 176px; width: calc(100% - 128px); border-collapse: collapse; font-size: 16px; line-height: 1.4; }
+.cond th { background: var(--navy); color: #fff; text-align: left; padding: 15px 18px; font-weight: 700; }
+.cond th:last-child { color: var(--ochre); }
+.cond td { border: 1px solid var(--rule); padding: 14px 18px; vertical-align: top; color: var(--ink); }
+.cond tr:nth-child(even) td { background: #F7F9FB; }
+
+/* 10 · one client or portfolio (interactive) */
+.s10 .bar-wrap { top: 174px; }
+.legend10 { display: flex; justify-content: space-between; align-items: center; margin-top: 16px; font-size: 14px; color: var(--slate); gap: 20px; }
+.legend10 .read { color: var(--ink); font-variant-numeric: tabular-nums; }
+.legend10 .read b { color: var(--navy); }
+.legend10 .ends { display: flex; gap: 8px; align-items: center; }
+.seg.bd .lock { font-weight: 400; font-size: 13px; margin-left: 8px; opacity: .8; }
+.gc { position: absolute; left: 64px; right: 64px; top: 296px; display: grid; grid-template-columns: 1fr 1fr; gap: 0 28px; }
+.gc .col { display: grid; gap: 8px; align-content: start; }
+.gc .head { display: flex; align-items: baseline; justify-content: space-between; padding: 0 2px 6px; }
+.gc .head .label.give { color: var(--give); }
+.gc .head .label.cost { color: var(--cost); }
+.gc .head small { font-size: 12px; color: var(--slate); }
+.row {
+  --c: var(--give); --lvl: 0;
+  display: grid; grid-template-columns: 10px 1fr auto; align-items: center; gap: 14px;
+  min-height: 52px; padding: 6px 16px 6px 14px; border-radius: 4px;
+  background: color-mix(in srgb, var(--c) calc(var(--lvl) * 4.5%), #F5F7FA);
+  border: 1px solid color-mix(in srgb, var(--c) calc(var(--lvl) * 15%), #E3E8EF);
+  transition: background .3s, border-color .3s;
+}
+.row.cost { --c: var(--cost); }
+.row .src { width: 10px; height: 10px; border-radius: 2px; }
+.row .src.h { background: var(--navy-2); }
+.row .src.r { background: var(--blue); }
+.row .txt { font-size: 16px; line-height: 1.3; color: var(--ink); transition: opacity .3s, color .3s; }
+.row[data-lvl="0"] .txt { opacity: .4; }
+.row[data-lvl="4"] .txt { font-weight: 700; color: color-mix(in srgb, var(--c) 55%, var(--ink)); }
+.meter { display: flex; align-items: center; gap: 10px; }
+.pips { display: flex; gap: 3px; }
+.pips i { width: 9px; height: 18px; border-radius: 2px; background: #D8DEE7; transition: background .3s; }
+.row[data-lvl="1"] .pips i:nth-child(-n+1),
+.row[data-lvl="2"] .pips i:nth-child(-n+2),
+.row[data-lvl="3"] .pips i:nth-child(-n+3),
+.row[data-lvl="4"] .pips i { background: var(--c); }
+.meter .w { width: 96px; white-space: nowrap; font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--c); }
+.row[data-lvl="0"] .meter .w { color: #9AA5B5; font-weight: 400; }
+@media (prefers-reduced-motion: reduce) { .row, .row .txt, .pips i { transition: none; } }
+
+/* 11 · stocktake */
+.s11 .split { grid-template-columns: 412px 1fr; }
+.s11 .darkcard { min-height: 404px; }
+.s11 .darkcard p { font-size: 22px; line-height: 1.5; }
+.s11 .steps { gap: 24px; padding-top: 0; }
+</style>
+
+<div class="app" id="app">
+  <div class="rotate" id="rotate" role="dialog" aria-labelledby="rotate-title">
+    <div class="phone" aria-hidden="true"></div>
+    <div class="eyebrow">Finding the balance</div>
+    <h2 id="rotate-title">Turn your phone sideways</h2>
+    <p>These slides are built for a landscape screen. Rotate your phone to start.</p>
+    <button type="button" id="portraitOk">Continue in portrait</button>
+  </div>
+  <div class="stage" id="stage">
+    <div class="frame" id="frame">
+      <div class="deck" id="deck">
+
+        <!-- 1 -->
+        <section class="slide dark s-cover" data-notes="OPENING · 5 MIN. Welcome. This is a discussion on balance: colleagues&#39; time treated as a pure abstraction, not a commentary on how we work today. Other workshops cover current practice. The four cards are the four things we&#39;ll look at. Dark slides are discussions; light slides are where I present. No decisions today.">
+          <div class="eyebrow">14 October 2026 · People agenda</div>
+          <h1>Finding the balance: colleagues' time and development</h1>
+          <div class="who">George and Katherine</div>
+        </section>
+
+        <!-- 2 -->
+        <section class="slide" data-notes="The spine of the hour. Two straw men that I present, then two rounds of discussion: pairs first, then the whole group. Bridges: into straw man 1, &#34;If we think of a colleague&#39;s time as a whole, how much should go to BD?&#34; Into straw man 2, &#34;And what should the rest, client work, actually mean?&#34; Into the pairs, &#34;What does this ask of us?&#34;">
+          <div class="eyebrow">The next hour</div>
+          <h2>Content</h2>
+          <div class="agenda">
+            <div class="panel"><span class="num">1</span>Opening and definitions</div>
+            <div class="panel"><span class="num">2</span>Balancing client work and business development</div>
+            <div class="panel"><span class="num">3</span>What does client work mean?</div>
+          </div>
+          <div class="foot"><span></span><span class="pg"></span></div>
+        </section>
+
+        <!-- 3 -->
+        <section class="slide" data-notes="Our four teams work so differently that even describing how colleagues spend their time gets complicated fast. Some run a variety of individual projects in-country; others support government directly as one big project team. So today steps back from current practice entirely. Development is the core way we support our colleagues, and the balance of their time decides what they learn. I&#39;ll use two straw men to get us there. Suggested line: &#34;I&#39;m going to step away from how we do things now and ask a simpler question: in principle, what balance helps our colleagues grow?&#34;">
+          <div class="eyebrow">Opening</div>
+          <h2>Four teams, too different to compare</h2>
+          <div class="split">
+            <div class="darkcard">
+              <div class="label">Our starting point</div>
+              <p>Development is the core way we support our colleagues. <strong>How their time is balanced decides what they learn.</strong></p>
+            </div>
+            <div class="steps">
+              <div><span class="num">1</span><div><h3>Four different set-ups</h3><p>Serbia, Albania, Ukraine and Moldova. Some run many projects in-country; others support government as one large team.</p></div></div>
+              <div><span class="num">2</span><div><h3>Hard to compare</h3><p>Each team's idiosyncrasies make comparison difficult</p></div></div>
+              <div><span class="num">3</span><div><h3>So today is an abstraction</h3><p>Two straw men to discuss</p></div></div>
+            </div>
+          </div>
+          <div class="foot"><span>People development · 14 October 2026</span><span class="pg"></span></div>
+        </section>
+
+        <!-- 4 · interactive -->
+        <section class="slide" id="s4" data-notes="STRAW MAN 1 · PRESENTATION · 12 MIN ACROSS THIS SLIDE AND THE NEXT THREE. Variable 1 is how much: the share of time on BD instead of client work. Start from 85:15 and say plainly it is a starting point, not a target. Over a year, 15% is about 7 working weeks. The core skills of consulting are built in client work; the question is how much BD adds without taking away from that. Drag the line to show other balances; the weeks figure follows.">
+          <div class="eyebrow">Straw man 1 · Time on BD</div>
+          <h2 id="s4-title">How much: 85% client work, 15% BD</h2>
+          <div class="bar-wrap" style="top:184px">
+            <div class="bar" id="bar4">
+              <div class="seg client" id="s4-client"><span id="s4-clientlab">85% client work</span></div>
+              <div class="seg bd" id="s4-bd"><span id="s4-bdlab">15% BD</span></div>
+              <div class="handle" id="h4" role="slider" tabindex="0" aria-label="Share of time on client work" aria-valuemin="0" aria-valuemax="100" aria-valuenow="85" aria-valuetext="85% client work, 15% BD"><span class="knob"><i></i><i></i></span></div>
+            </div>
+            <div class="ticks" id="ticks4"></div>
+          </div>
+          <div class="stats">
+            <div class="panel"><div class="big" id="s4-c">85%</div><p>on client work, where the core skills of consulting are built</p></div>
+            <div class="panel"><div class="big" id="s4-b">15%</div><p>on BD and associated activities, including corporate contribution</p></div>
+            <div class="panel"><div class="big" id="s4-w">~7 weeks</div><p>of BD a year (<span id="s4-d">about 35 working days</span>), assuming about 46 working weeks</p></div>
+          </div>
+          <div class="defs">
+            <div class="c"><strong>Client work definition</strong>: Paid for work with a government or corporate client</div>
+            <div class="b"><strong>BD definition</strong>: Bid or corporate-contribution work which is not tied to a specific paid engagement</div>
+          </div>
+          <div class="drag-hint">Drag the white line, or select it and use the arrow keys. <button class="reset" id="r4" type="button">Reset to 85:15</button></div>
+          <div class="foot"><span></span><span class="pg"></span></div>
+        </section>
+
+        <!-- 5 -->
+        <section class="slide" data-notes="Variable 2 is how often: how the same 15% is spread. Every day it is about 70 minutes; every week about three-quarters of a day; in blocks about 2⅓ weeks three times a year; once a year about 7 weeks in one go. The two dark cards are the ends we compare on the next slide.">
+          <div class="eyebrow">Straw man 1 · Time on BD</div>
+          <h2>How often: the same 15%, four rhythms</h2>
+          <div class="track"><span class="label">Little and often</span><hr><span class="label">All at once</span></div>
+          <div class="rhythms">
+            <div class="d"><div class="k">Every day</div><div class="v">70 min</div><div class="u">a day</div></div>
+            <div><div class="k">Every week</div><div class="v">¾ day</div><div class="u">a week</div></div>
+            <div><div class="k">In blocks</div><div class="v">2⅓ weeks</div><div class="u">three times a year</div></div>
+            <div class="d"><div class="k">Once a year</div><div class="v">7 weeks</div><div class="u">in one go</div></div>
+          </div>
+          <div class="note" style="top:420px">Next: the trade-offs at the two ends. Most real options sit in between.</div>
+          <div class="foot"><span>People development · 14 October 2026</span><span class="pg"></span></div>
+        </section>
+
+        <!-- 6 -->
+        <section class="slide" data-notes="Trade-offs at the two ends. Frequent BD means constant growth potential but can crunch against client work every day. A once-a-year block protects client work and gives deep immersion, but skills fade and opportunities outside the window are missed. Most real options sit between: a regular day a week, or blocks of a few weeks.">
+          <div class="eyebrow">Straw man 1 · Time on BD</div>
+          <h2>BD: A little every day, or all at once?</h2>
+          <div class="pair">
+            <div class="panel">
+              <h3>A little every day</h3>
+              <div class="label">Gives</div>
+              <ul class="dots"><li>Constant BD growth: skills build steadily</li><li>Light, frequent coaching touchpoints</li><li>A good fit for ongoing pipeline work</li></ul>
+              <div class="label cost">Costs</div>
+              <ul class="dots"><li>A daily crunch against client deadlines</li><li>Constant switching between mindsets</li><li>Hard for country directors to see or protect</li></ul>
+            </div>
+            <div class="panel">
+              <h3>All at once, once a year</h3>
+              <div class="label">Gives</div>
+              <ul class="dots"><li>Deep immersion in a full bid</li><li>Client work protected most of the year</li><li>Easy to plan around, once scheduled</li></ul>
+              <div class="label cost">Costs</div>
+              <ul class="dots"><li>Skills can fade before the next burst</li><li>A long absence from the client</li><li>Misses opportunities outside the window</li></ul>
+            </div>
+          </div>
+          <div class="foot"><span>People development · 14 October 2026</span><span class="pg"></span></div>
+        </section>
+
+        <!-- 7 -->
+        <section class="slide" data-notes="Client work and BD build different skills, and they complement each other. Client work gives BD credibility: real examples, realistic approaches, an honest sense of what delivery takes. BD gives client work perspective: why the work was won, what the client was promised, how it fits a wider market. The condition is conscious coaching: without a senior colleague drawing out the connection, the two stay separate experiences.">
+          <div class="eyebrow">Straw man 1 · What each kind of work teaches</div>
+          <h2>Client work and BD teach different things</h2>
+          <div class="pair">
+            <div class="panel">
+              <div class="iconhead">
+                <span class="icon" style="background:var(--navy-2)"><svg viewbox="0 0 24 24" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="8" r="3.2"/><path d="M3.5 19c.6-3.2 2.8-5 5.5-5s4.9 1.8 5.5 5"/><circle cx="16.5" cy="9" r="2.6"/><path d="M15.5 14.2c2.6-.3 4.6 1.4 5 4.3"/></svg></span>
+                <h3>Client work builds</h3>
+              </div>
+              <ul class="dots"><li>Deep knowledge of one client and its politics</li><li>Solving real problems under real constraints</li><li>Day-to-day relationships and expectations</li><li>Delivering to scope and budget</li><li>Quality, consistency and follow-through</li></ul>
+            </div>
+            <div class="panel">
+              <div class="iconhead">
+                <span class="icon" style="background:var(--ochre)"><svg viewbox="0 0 24 24" fill="none" stroke="#14213D" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M9 17h6M10 20.5h4"/><path d="M12 3.5a6 6 0 0 0-3.6 10.8c.6.5 1 1.2 1 2V17h5.2v-.7c0-.8.4-1.5 1-2A6 6 0 0 0 12 3.5z"/></svg></span>
+                <h3>BD builds</h3>
+              </div>
+              <ul class="dots"><li>Reading a new client's needs quickly</li><li>Framing problems before work begins</li><li>Persuasive writing and pitching</li><li>Scoping, pricing and choosing which work to pursue</li><li>Working across countries and disciplines, at speed</li></ul>
+            </div>
+          </div>
+          <div class="banner darkcard"><strong>The link is coaching:</strong> they complement each other only if a senior colleague consciously draws out the connection.</div>
+          <div class="foot"><span>People development · 14 October 2026</span><span class="pg"></span></div>
+        </section>
+
+        <!-- 8 -->
+        <section class="slide dark" data-notes="6 minutes, open plenary. Any answer is fine; this is a starter. Park anything about how a specific team would implement it: that&#39;s the team-by-team question we&#39;re not solving today. Bridge into straw man 2: &#34;And what should the rest, client work, actually mean?&#34;">
+          <div class="eyebrow">Straw man 1 · Room reaction · 6 min</div>
+          <h2>Does this balance feel right?</h2>
+          <div class="qs">
+            <div><span class="num ochre">1</span>In principle, does 85:15 feel like the right balance? Any answer is fine.</div>
+            <div><span class="num ochre">2</span>Which rhythm seems right for development, and which for the business? Are they the same?</div>
+            <div><span class="num ochre">3</span>What would management between client work and BD actually look like?</div>
+          </div>
+          <div class="after" style="top:520px">Whole room · a starter, not a target</div>
+          <div class="foot"><span></span><span class="pg"></span></div>
+        </section>
+
+        <!-- 9 -->
+        <section class="slide" data-notes="STRAW MAN 2 · PRESENTATION · 14 MIN ACROSS THIS SLIDE AND THE NEXT TWO. Colleagues learn different skills in client work and BD, and each needs different conditions. Client work needs cultural understanding and often, though not always, proximity to the client: urgent meetings and fast turnarounds. BD needs a lot of cross-regional collaboration, drawing on different skill sets, and it can be agile.">
+          <div class="eyebrow">Straw man 2 · What client work means</div>
+          <h2>Each kind of work needs its own conditions</h2>
+          <table class="cond">
+            <colgroup><col style="width:25%"><col style="width:37.5%"><col style="width:37.5%"></colgroup>
+            <thead><tr><th>Requirement</th><th>Client work</th><th>BD</th></tr></thead>
+            <tbody>
+              <tr><td>Cultural understanding</td><td>Essential: the client's context, language and politics</td><td>Helpful, often drawn from colleagues who have it</td></tr>
+              <tr><td>Proximity to the client</td><td>Needed, <strong>though not for some TBI grades?</strong></td><td>Rarely needed?</td></tr>
+              <tr><td>Responsiveness</td><td>Urgent meetings and fast turnarounds</td><td>Hard deadlines, <strong>can we set a rhythm in advance?</strong></td></tr>
+              <tr><td>Collaboration</td><td>Mostly within one country team</td><td>Across the region, drawing on different skill sets</td></tr>
+              <tr><td>Where and how</td><td>Tied to the client's location and rhythm</td><td>Agile: from anywhere, with teams formed per bid</td></tr>
+            </tbody>
+          </table>
+          <div class="foot"><span>People development · 14 October 2026</span><span class="pg"></span></div>
+        </section>
+
+        <!-- 10 · interactive -->
+        <section class="slide s10" id="s10" data-notes="Abstract client work one step further. Does the 85% mean one specific client, or could colleagues also work remotely on other client projects in the region? Start at 85% on the home client, then drag the line to move time onto remote work for other clients (for example 60% home, 25% remote) and watch the gives and costs shift. BD stays fixed at 15%. Treat this purely as a consideration; feasibility and practicalities are for Katherine&#39;s separate workshop.">
+          <div class="eyebrow">Straw man 2 · What client work means</div>
+          <h2>One client, or a portfolio?</h2>
+          <div class="bar-wrap">
+            <div class="bar" id="bar10">
+              <div class="seg home" id="s10-home"><span id="s10-homelab">Home client 85%</span></div>
+              <div class="seg remote" id="s10-remote"><span id="s10-remotelab"></span></div>
+              <div class="seg bd" style="width:15%;flex:none"><span>BD 15%<span class="lock">fixed</span></span></div>
+              <div class="handle" id="h10" role="slider" tabindex="0" aria-label="Share of time on the home client" aria-valuemin="0" aria-valuemax="85" aria-valuenow="85" aria-valuetext="Home client 85%, remote 0%, BD 15%"><span class="knob"><i></i><i></i></span></div>
+            </div>
+            <div class="legend10">
+              <span class="read" id="s10-read"></span>
+              <span class="ends"><button class="reset" id="r10" type="button">Reset to one client</button></span>
+            </div>
+          </div>
+          <div class="gc" id="gc">
+            <div class="col">
+              <div class="head"><span class="label give">Gives</span><small>■ from home client &nbsp; <span style="color:var(--blue)">■</span> from remote work</small></div>
+              <div class="row give" data-k="g1"><span class="src h"></span><span class="txt">Deep relationship and context with one client</span><span class="meter"><span class="pips"><i></i><i></i><i></i><i></i></span><span class="w"></span></span></div>
+              <div class="row give" data-k="g2"><span class="src h"></span><span class="txt">Fully available when the client needs it urgently</span><span class="meter"><span class="pips"><i></i><i></i><i></i><i></i></span><span class="w"></span></span></div>
+              <div class="row give" data-k="g3"><span class="src r"></span><span class="txt">Breadth across teams, clients and approaches</span><span class="meter"><span class="pips"><i></i><i></i><i></i><i></i></span><span class="w"></span></span></div>
+              <div class="row give" data-k="g4"><span class="src r"></span><span class="txt">Skills move to where they are needed</span><span class="meter"><span class="pips"><i></i><i></i><i></i><i></i></span><span class="w"></span></span></div>
+            </div>
+            <div class="col">
+              <div class="head"><span class="label cost">Costs</span><small>&nbsp;</small></div>
+              <div class="row cost" data-k="c1"><span class="src h"></span><span class="txt">One sector and one way of working</span><span class="meter"><span class="pips"><i></i><i></i><i></i><i></i></span><span class="w"></span></span></div>
+              <div class="row cost" data-k="c2"><span class="src h"></span><span class="txt">Skills stay within one team</span><span class="meter"><span class="pips"><i></i><i></i><i></i><i></i></span><span class="w"></span></span></div>
+              <div class="row cost" data-k="c3"><span class="src r"></span><span class="txt">Less depth, and competing deadlines</span><span class="meter"><span class="pips"><i></i><i></i><i></i><i></i></span><span class="w"></span></span></div>
+              <div class="row cost" data-k="c4"><span class="src r"></span><span class="txt">Two leads: risk of two masters and overwork</span><span class="meter"><span class="pips"><i></i><i></i><i></i><i></i></span><span class="w"></span></span></div>
+            </div>
+          </div>
+          <div class="note" style="top:632px">A consideration only. Whether remote work is feasible, and how, is for Katherine's workshop.</div>
+          <div class="foot"><span>People development · 14 October 2026</span><span class="pg"></span></div>
+        </section>
+
+        <!-- 11 -->
+        <section class="slide s11" data-notes="Stocktake. Development and our people are driven by the work we do. Committing to any of these work elements at an institutional level puts the onus on us as leadership to manage the trade-offs and to contract in a clear, predictable way. The risk is overcommitting colleagues: they don&#39;t grow or develop, or they burn out. As can we. Bridge into the pairs: &#34;So, in principle, what is right for our model?&#34;">
+          <div class="eyebrow">Straw man 2 · Stocktake</div>
+          <h2>Development is driven by the work we do</h2>
+          <div class="split">
+            <div class="darkcard">
+              <div class="label">What this asks of us</div>
+              <p>If we commit to any of this as an institution, <strong>managing the trade-offs is our job, not the junior colleague's.</strong></p>
+            </div>
+            <div class="steps">
+              <div><span class="num">1</span><div><h3>The work shapes the learning</h3><p>What colleagues learn depends on the work we give them and how we lead it.</p></div></div>
+              <div><span class="num">2</span><div><h3>Commitment puts the onus on us</h3><p>A share for BD, a rhythm, remote support: each needs leadership to hold the trade-offs.</p></div></div>
+              <div><span class="num">3</span><div><h3>Contract clearly and predictably</h3><p>Who has a colleague's time, for how long, and with what expectations, agreed in advance.</p></div></div>
+              <div><span class="num ochre">4</span><div><h3>Beware overcommitment</h3><p>Colleagues pulled in too many directions cope rather than grow, or burn out. So can we.</p></div></div>
+            </div>
+          </div>
+          <div class="foot"><span>People development · 14 October 2026</span><span class="pg"></span></div>
+        </section>
+
+        <!-- 12 -->
+        <section class="slide dark" data-notes="8 minutes. Four pairs and one trio, ideally mixing country teams. The central question is in principle only: does remote support for other projects belong in our model at all? Feasibility and practicalities are for Katherine&#39;s workshop; park them there.">
+          <div class="eyebrow">Discussion · Pairs · 8 min</div>
+          <h2>Does remote support belong in our model?</h2>
+          <div class="qs">
+            <div><span class="num ochre">1</span>Where on the line fits better: one client, a portfolio, or somewhere in between?</div>
+            <div><span class="num ochre">2</span>What would have to be true for a colleague to grow from cross-regional work, not just be stretched by it?</div>
+            <div><span class="num ochre">3</span>Where is our own risk of overcommitting colleagues, or ourselves?</div>
+          </div>
+          <div class="after" style="top:520px">Four pairs and one trio · in principle only; feasibility is for Katherine's workshop</div>
+          <div class="foot"><span></span><span class="pg"></span></div>
+        </section>
+
+      </div>
+    </div>
+    <div class="notes" id="notes" hidden=""><b>Speaker notes</b><span id="notes-text"></span></div>
+  </div>
+  <div class="controls" id="controls">
+    <button type="button" id="prev" aria-label="Previous slide">←</button>
+    <span class="count" id="count">1 / 12</span>
+    <button type="button" id="next" aria-label="Next slide">→</button>
+    <span class="spacer"></span>
+    <button type="button" id="notesBtn" aria-pressed="false">Notes</button>
+    <button type="button" id="fsBtn">Full screen</button>
+    <span class="hint">Arrow keys to move · N notes · F full screen</span>
+  </div>
+</div>
+
+<script>
+(function () {
+  var W = 1280, H = 720;
+  var app = document.getElementById('app');
+  var stage = document.getElementById('stage');
+  var frame = document.getElementById('frame');
+  var deck = document.getElementById('deck');
+  var slides = Array.prototype.slice.call(deck.querySelectorAll('.slide'));
+  var countEl = document.getElementById('count');
+  var notes = document.getElementById('notes');
+  var notesText = document.getElementById('notes-text');
+  var cur = 0;
+
+  slides.forEach(function (s, i) { var pg = s.querySelector('.pg'); if (pg) pg.textContent = i + 1; });
+
+  /* ---------- scale to fit ---------- */
+  function fit() {
+    var cs = getComputedStyle(stage);
+    var aw = stage.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+    var ah = stage.clientHeight - parseFloat(cs.paddingTop) - parseFloat(cs.paddingBottom);
+    var s = Math.max(0.1, Math.min(aw / W, ah / H));
+    frame.style.width = (W * s) + 'px';
+    frame.style.height = (H * s) + 'px';
+    deck.style.transform = 'scale(' + s + ')';
+  }
+  window.addEventListener('resize', fit);
+  if (window.ResizeObserver) new ResizeObserver(fit).observe(stage);
+
+  /* ---------- navigation ---------- */
+  function go(i) {
+    i = Math.max(0, Math.min(slides.length - 1, i));
+    slides[cur].classList.remove('active');
+    cur = i;
+    slides[cur].classList.add('active');
+    countEl.textContent = (cur + 1) + ' / ' + slides.length;
+    notesText.textContent = slides[cur].getAttribute('data-notes') || '';
+    try { history.replaceState(null, '', '#' + (cur + 1)); } catch (e) {}
+  }
+  document.getElementById('prev').onclick = function () { go(cur - 1); };
+  document.getElementById('next').onclick = function () { go(cur + 1); };
+
+  function toggleNotes() {
+    notes.hidden = !notes.hidden;
+    document.getElementById('notesBtn').setAttribute('aria-pressed', String(!notes.hidden));
+  }
+  document.getElementById('notesBtn').onclick = toggleNotes;
+
+  function toggleFs() {
+    try {
+      if (document.fullscreenElement) document.exitFullscreen();
+      else if (app.requestFullscreen) {
+        app.requestFullscreen().then(function () {
+          // on phones that allow it, hold landscape while presenting full screen
+          try { if (screen.orientation && screen.orientation.lock) screen.orientation.lock('landscape').catch(function () {}); } catch (e) {}
+        }).catch(function () {});
+      }
+    } catch (e) {}
+  }
+  document.getElementById('portraitOk').onclick = function () { app.classList.add('portrait-ok'); fit(); };
+  if (window.matchMedia) {
+    var land = window.matchMedia('(orientation: landscape)');
+    var onTurn = function () { if (land.matches) app.classList.remove('portrait-ok'); setTimeout(fit, 120); };
+    if (land.addEventListener) land.addEventListener('change', onTurn); else if (land.addListener) land.addListener(onTurn);
+  }
+  document.getElementById('fsBtn').onclick = toggleFs;
+  var hideTimer;
+  document.addEventListener('fullscreenchange', function () {
+    var on = !!document.fullscreenElement;
+    app.classList.toggle('fs', on);
+    document.getElementById('fsBtn').textContent = on ? 'Exit full screen' : 'Full screen';
+    setTimeout(fit, 50);
+  });
+  document.addEventListener('mousemove', function () {
+    if (!app.classList.contains('fs')) return;
+    app.classList.add('show-ui');
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(function () { app.classList.remove('show-ui'); }, 2200);
+  });
+
+  document.addEventListener('keydown', function (e) {
+    if (e.altKey || e.ctrlKey || e.metaKey) return;
+    var t = e.target;
+    if (t && (t.getAttribute('role') === 'slider')) return; // sliders handle their own keys
+    var k = e.key;
+    if (k === 'ArrowRight' || k === 'PageDown' || k === 'ArrowDown' || (k === ' ' && !(t && t.tagName === 'BUTTON'))) { e.preventDefault(); go(cur + 1); }
+    else if (k === 'ArrowLeft' || k === 'PageUp' || k === 'ArrowUp' || k === 'Backspace') { e.preventDefault(); go(cur - 1); }
+    else if (k === 'Home') { e.preventDefault(); go(0); }
+    else if (k === 'End') { e.preventDefault(); go(slides.length - 1); }
+    else if (k === 'n' || k === 'N') toggleNotes();
+    else if (k === 'f' || k === 'F') toggleFs();
+  });
+
+  // swipe on touch screens (not when starting on a draggable bar)
+  var sx = null, sy = null;
+  stage.addEventListener('touchstart', function (e) {
+    if (e.target.closest('.bar')) { sx = null; return; }
+    sx = e.touches[0].clientX; sy = e.touches[0].clientY;
+  }, { passive: true });
+  stage.addEventListener('touchend', function (e) {
+    if (sx === null) return;
+    var dx = e.changedTouches[0].clientX - sx, dy = e.changedTouches[0].clientY - sy;
+    if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy)) go(cur + (dx < 0 ? 1 : -1));
+    sx = null;
+  }, { passive: true });
+
+  /* ---------- draggable bar helper ---------- */
+  function makeSlider(bar, handle, min, max, initial, onChange) {
+    var value = initial;
+    function set(v) {
+      v = Math.round(Math.max(min, Math.min(max, v)));
+      if (v === value && handle.dataset.ready) return;
+      value = v; handle.dataset.ready = '1';
+      onChange(v);
+    }
+    function fromX(clientX) {
+      var r = bar.getBoundingClientRect();
+      return ((clientX - r.left) / r.width) * 100;
+    }
+    var dragging = false;
+    bar.addEventListener('pointerdown', function (e) {
+      if (e.button !== undefined && e.button !== 0) return;
+      dragging = true; handle.classList.add('dragging');
+      try { bar.setPointerCapture(e.pointerId); } catch (err) {}
+      set(fromX(e.clientX));
+      handle.focus({ preventScroll: true });
+      e.preventDefault();
+    });
+    bar.addEventListener('pointermove', function (e) { if (dragging) set(fromX(e.clientX)); });
+    function end() { dragging = false; handle.classList.remove('dragging'); }
+    bar.addEventListener('pointerup', end);
+    bar.addEventListener('pointercancel', end);
+    handle.addEventListener('keydown', function (e) {
+      var step = e.shiftKey ? 5 : 1, k = e.key;
+      if (k === 'ArrowLeft' || k === 'ArrowDown') { set(value - step); e.preventDefault(); }
+      else if (k === 'ArrowRight' || k === 'ArrowUp') { set(value + step); e.preventDefault(); }
+      else if (k === 'PageDown') { set(value - 10); e.preventDefault(); }
+      else if (k === 'PageUp') { set(value + 10); e.preventDefault(); }
+      else if (k === 'Home') { set(min); e.preventDefault(); }
+      else if (k === 'End') { set(max); e.preventDefault(); }
+      else if (k === 'Escape') { handle.blur(); }
+    });
+    onChange(value); handle.dataset.ready = '1';
+    return { set: set };
+  }
+
+  function halves(x) {
+    var r = Math.round(x * 2) / 2;
+    var whole = Math.floor(r), half = r - whole >= 0.5;
+    if (whole === 0 && half) return '½';
+    return whole + (half ? '½' : '');
+  }
+  function pop(el, text) {
+    if (el.textContent === text) return;
+    el.textContent = text;
+    el.classList.remove('pop'); void el.offsetWidth; el.classList.add('pop');
+  }
+
+  /* ---------- slide 4: client vs BD ---------- */
+  (function () {
+    var bar = document.getElementById('bar4'), h = document.getElementById('h4');
+    var segC = document.getElementById('s4-client'), segB = document.getElementById('s4-bd');
+    var labC = document.getElementById('s4-clientlab'), labB = document.getElementById('s4-bdlab');
+    var ticks = document.getElementById('ticks4');
+    for (var t = 0; t <= 100; t += 10) {
+      var sp = document.createElement('span'); sp.style.left = t + '%'; sp.textContent = t + '%'; ticks.appendChild(sp);
+    }
+    var WEEKS = 46;
+    var slider = makeSlider(bar, h, 0, 100, 85, function (c) {
+      var b = 100 - c;
+      segC.style.width = c + '%'; segB.style.width = b + '%';
+      segC.style.paddingLeft = c < 3 ? '0' : ''; segB.style.paddingLeft = b < 4 ? '0' : '';
+      h.style.left = c + '%';
+      labC.textContent = c >= 18 ? c + '% client work' : (c >= 6 ? c + '%' : '');
+      labB.textContent = b >= 10 ? b + '% BD' : (b >= 6 ? b + '%' : '');
+      document.getElementById('s4-title').textContent = 'How much: ' + c + '% client work, ' + b + '% BD';
+      pop(document.getElementById('s4-c'), c + '%');
+      pop(document.getElementById('s4-b'), b + '%');
+      var wk = b / 100 * WEEKS, days = Math.round(wk * 5);
+      var hv = halves(wk);
+      pop(document.getElementById('s4-w'), (b === 0 ? '0 weeks' : '~' + hv + (hv === '1' || hv === '½' ? ' week' : ' weeks')));
+      document.getElementById('s4-d').textContent = 'about ' + days + ' working day' + (days === 1 ? '' : 's');
+      h.setAttribute('aria-valuenow', c);
+      h.setAttribute('aria-valuetext', c + '% client work, ' + b + '% BD, about ' + hv + ' weeks of BD a year');
+    });
+    document.getElementById('r4').onclick = function () { slider.set(85); };
+  })();
+
+  /* ---------- slide 10: home client vs remote, BD fixed at 15% ---------- */
+  (function () {
+    var bar = document.getElementById('bar10'), h = document.getElementById('h10');
+    var segH = document.getElementById('s10-home'), segR = document.getElementById('s10-remote');
+    var labH = document.getElementById('s10-homelab'), labR = document.getElementById('s10-remotelab');
+    var read = document.getElementById('s10-read');
+    var WORDS = ['Not present', 'Low', 'Moderate', 'High', 'Very high'];
+    // r = share on remote work for other clients (0–85). Each level rises past a breakpoint.
+    function rising(r, bps) { var n = 0; for (var i = 0; i < bps.length; i++) if (r > bps[i]) n++; return n; }
+    var rules = {
+      g1: function (r) { return 4 - rising(r, [10, 25, 45, 65]); },  // depth with one client fades slowly
+      g2: function (r) { return 4 - rising(r, [0, 10, 25, 45]); },   // full availability drops as soon as time is split
+      g3: function (r) { return rising(r, [0, 10, 25, 45]); },
+      g4: function (r) { return rising(r, [0, 15, 30, 50]); },
+      c1: function (r) { return 4 - rising(r, [0, 10, 25, 45]); },
+      c2: function (r) { return 4 - rising(r, [0, 15, 30, 50]); },
+      c3: function (r) { return rising(r, [0, 10, 25, 45]); },
+      c4: function (r) { return r <= 0 ? 0 : Math.min(4, 1 + rising(r, [0, 10, 30])); } // two leads appear the moment there are two
+    };
+    var rows = Array.prototype.slice.call(document.querySelectorAll('#gc .row'));
+    var slider = makeSlider(bar, h, 0, 85, 85, function (home) {
+      var remote = 85 - home;
+      segH.style.width = home + '%'; segR.style.width = remote + '%';
+      segH.style.paddingLeft = home < 3 ? '0' : ''; segR.style.paddingLeft = remote < 4 ? '0' : '';
+      h.style.left = home + '%';
+      labH.textContent = home >= 22 ? 'Home client ' + home + '%' : (home >= 6 ? home + '%' : '');
+      labR.textContent = remote >= 18 ? 'Remote ' + remote + '%' : (remote >= 7 ? remote + '%' : '');
+      var rw = remote / 100 * 46;
+      read.innerHTML = remote === 0
+        ? 'All client time on the <b>home client</b>. Drag the line right to add remote work for other clients.'
+        : '<b>' + remote + '%</b> on other clients, remotely: about <b>' + halves(rw) + ' weeks</b> a year';
+      rows.forEach(function (row) {
+        var lvl = rules[row.getAttribute('data-k')](remote);
+        row.setAttribute('data-lvl', lvl);
+        row.style.setProperty('--lvl', lvl);
+        row.querySelector('.w').textContent = WORDS[lvl];
+      });
+      h.setAttribute('aria-valuenow', home);
+      h.setAttribute('aria-valuetext', 'Home client ' + home + '%, remote ' + remote + '%, BD 15%');
+    });
+    document.getElementById('r10').onclick = function () { slider.set(85); };
+  })();
+
+  /* ---------- start ---------- */
+  var start = parseInt((location.hash || '').replace('#', ''), 10);
+  slides[0].classList.add('active');
+  go(isNaN(start) ? 0 : start - 1);
+  window.addEventListener('hashchange', function () {
+    var n = parseInt((location.hash || '').replace('#', ''), 10);
+    if (!isNaN(n) && n - 1 !== cur) go(n - 1);
+  });
+  fit();
+})();
+</script>
+
+</body></html>
